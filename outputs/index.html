@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Business Intelligence Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --ink: #1d2428;
+      --muted: #65727a;
+      --line: #dce2dc;
+      --green: #26745d;
+      --teal: #1d8591;
+      --gold: #bd7c1f;
+      --red: #b64d4d;
+      --blue: #456aa8;
+      --shadow: 0 12px 32px rgba(24, 36, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 252px 1fr;
+    }
+
+    aside {
+      background: #1f2b2e;
+      color: #f8faf7;
+      padding: 24px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: conic-gradient(from 150deg, #64b99f, #e4ad54, #4c78bd, #64b99f);
+      position: relative;
+    }
+
+    .mark::after {
+      content: "";
+      position: absolute;
+      inset: 9px;
+      border-radius: 5px;
+      background: #1f2b2e;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.15;
+    }
+
+    .brand span {
+      color: #b9c5c4;
+      font-size: 12px;
+    }
+
+    nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-item {
+      border: 0;
+      color: #dfe8e4;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav-item.active,
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.11);
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .refresh-box {
+      margin-top: auto;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #d9e4e0;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    main {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.15;
+      font-weight: 750;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-btn,
+    .primary-btn {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      box-shadow: 0 2px 4px rgba(25, 36, 40, 0.04);
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      border-color: #1f6f5a;
+      background: #26745d;
+      color: #fff;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    select,
+    input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 8px 10px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi {
+      padding: 16px;
+      min-height: 126px;
+      display: grid;
+      align-content: space-between;
+      gap: 12px;
+    }
+
+    .kpi-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .kpi-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+    }
+
+    .kpi-value {
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .kpi-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .delta {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 750;
+      color: #0f5f4a;
+      background: #e5f3ed;
+    }
+
+    .delta.down {
+      color: #944242;
+      background: #f7e8e6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
+      gap: 12px;
+    }
+
+    .panel-header {
+      padding: 16px 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 780;
+    }
+
+    .panel-note {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chart-box {
+      height: 304px;
+      padding: 12px 16px 16px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: 360px;
+      border-top: 1px solid var(--line);
+      margin-top: 14px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 720px;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 11px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      background: #fafbf8;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e8f1ef;
+      color: #246452;
+    }
+
+    .status.warn {
+      background: #f8ead8;
+      color: #8a5517;
+    }
+
+    .workflow {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #e9efeb;
+      color: #2d4642;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .step strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    @media (max-width: 1020px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        height: auto;
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+      }
+
+      nav {
+        display: flex;
+      }
+
+      .refresh-box {
+        margin-top: 0;
+        min-width: 190px;
+      }
+
+      .toolbar,
+      .kpis,
+      .grid,
+      .two-col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding: 16px;
+      }
+
+      .topbar,
+      aside {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .toolbar,
+      .kpis,
+      .grid,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .icon-btn,
+      .primary-btn {
+        flex: 1 1 calc(50% - 8px);
+      }
+
+      .primary-btn {
+        flex-basis: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <strong>BI Operations</strong>
+          <span>Performance dashboard</span>
+        </div>
+      </div>
+      <nav aria-label="Dashboard sections">
+        <button class="nav-item active" type="button"><span class="nav-icon">▦</span> Overview</button>
+        <button class="nav-item" type="button"><span class="nav-icon">◴</span> Sales</button>
+        <button class="nav-item" type="button"><span class="nav-icon">◎</span> Operations</button>
+        <button class="nav-item" type="button"><span class="nav-icon">↧</span> Reports</button>
+      </nav>
+      <div class="refresh-box">
+        <strong>Automated refresh</strong><br>
+        Daily at 07:00 GST<br>
+        Last run: <span id="lastRefresh">Today</span>
+      </div>
+    </aside>
+
+    <main>
+      <section class="topbar">
+        <div>
+          <h1>Business Intelligence Dashboard</h1>
+          <div class="subtitle">KPI monitoring, reporting automation, and operational performance analysis</div>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" id="resetBtn" type="button" title="Reset filters">↺ Reset</button>
+          <button class="icon-btn" id="csvBtn" type="button" title="Export filtered records">⇩ CSV</button>
+          <button class="primary-btn" id="reportBtn" type="button" title="Generate management summary">▣ Generate report</button>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Dashboard filters">
+        <div class="field">
+          <label for="dateRange">Reporting period</label>
+          <select id="dateRange">
+            <option value="12">Last 12 months</option>
+            <option value="6">Last 6 months</option>
+            <option value="3">Last quarter</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="regionFilter">Region</label>
+          <select id="regionFilter">
+            <option value="All">All regions</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="departmentFilter">Department</label>
+          <select id="departmentFilter">
+            <option value="All">All departments</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="targetInput">Revenue target</label>
+          <input id="targetInput" type="number" min="100000" step="25000" value="725000">
+        </div>
+      </section>
+
+      <section class="kpis" aria-label="Key performance indicators">
+        <article class="card kpi">
+          <div class="kpi-title">Revenue <span class="kpi-icon" style="background: var(--green);">◆</span></div>
+          <div class="kpi-value" id="revenueKpi">$0</div>
+          <div class="kpi-foot"><span>vs prior period</span><span class="delta" id="revenueDelta">0%</span></div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-title">Gross Margin <span class="kpi-icon" style="background: var(--gold);">◒</span></div>
+          <div class="kpi-value" id="marginKpi">0%</div>
+          <div class="kpi-foot"><span>weighted average</span><span class="delta" id="marginDelta">0%</span></div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-title">SLA Compliance <span class="kpi-icon" style="background: var(--teal);">✓</span></div>
+          <div class="kpi-value" id="slaKpi">0%</div>
+          <div class="kpi-foot"><span>service reliability</span><span class="delta" id="slaDelta">0%</span></div>
+        </article>
+        <article class="card kpi">
+          <div class="kpi-title">Open Risks <span class="kpi-icon" style="background: var(--red);">!</span></div>
+          <div class="kpi-value" id="riskKpi">0</div>
+          <div class="kpi-foot"><span>needs attention</span><span class="delta down" id="riskDelta">0</span></div>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <div class="panel-header">
+            <h2 class="panel-title">Revenue and Target Trend</h2>
+            <span class="panel-note" id="trendNote">12 months</span>
+          </div>
+          <div class="chart-box">
+            <canvas id="trendChart" aria-label="Revenue trend chart"></canvas>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="panel-header">
+            <h2 class="panel-title">Management Summary</h2>
+            <span class="panel-note" id="summaryPeriod">Current view</span>
+          </div>
+          <div class="workflow" id="summaryBox"></div>
+        </article>
+      </section>
+
+      <section class="two-col">
+        <article class="card">
+          <div class="panel-header">
+            <h2 class="panel-title">Revenue by Region</h2>
+            <span class="panel-note">filtered</span>
+          </div>
+          <div class="chart-box">
+            <canvas id="regionChart" aria-label="Revenue by region chart"></canvas>
+          </div>
+        </article>
+        <article class="card">
+          <div class="panel-header">
+            <h2 class="panel-title">Department Performance</h2>
+            <span class="panel-note">margin and SLA</span>
+          </div>
+          <div class="chart-box">
+            <canvas id="deptChart" aria-label="Department performance chart"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <div class="panel-header">
+          <h2 class="panel-title">Operational Metrics</h2>
+          <span class="panel-note" id="rowCount">0 records</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Region</th>
+                <th>Department</th>
+                <th>Revenue</th>
+                <th>Margin</th>
+                <th>SLA</th>
+                <th>Tickets</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="metricsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const regions = ["North", "South", "East", "West"];
+    const departments = ["Sales", "Operations", "Finance", "Customer Success"];
+    const monthNames = ["Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026", "Apr 2026", "May 2026", "Jun 2026"];
+    const palette = ["#26745d", "#bd7c1f", "#456aa8", "#b64d4d", "#1d8591"];
+
+    const data = monthNames.flatMap((month, monthIndex) =>
+      regions.flatMap((region, regionIndex) =>
+        departments.map((department, deptIndex) => {
+          const base = 72000 + monthIndex * 2600 + regionIndex * 7200 + deptIndex * 4700;
+          const seasonal = Math.sin((monthIndex + deptIndex) / 2) * 8200;
+          const efficiency = 0.82 + ((regionIndex + deptIndex + monthIndex) % 6) / 100;
+          const revenue = Math.round(base + seasonal + (deptIndex === 0 ? 14000 : 0));
+          const margin = Math.round((0.28 + efficiency / 7 + deptIndex * 0.008) * 1000) / 10;
+          const sla = Math.round((88 + ((monthIndex + regionIndex * 2 + deptIndex) % 10)) * 10) / 10;
+          const tickets = Math.round(42 + regionIndex * 8 + deptIndex * 5 + (11 - monthIndex) * 1.4);
+          return { month, monthIndex, region, department, revenue, margin, sla, tickets };
+        })
+      )
+    );
+
+    const els = {
+      dateRange: document.getElementById("dateRange"),
+      regionFilter: document.getElementById("regionFilter"),
+      departmentFilter: document.getElementById("departmentFilter"),
+      targetInput: document.getElementById("targetInput"),
+      revenueKpi: document.getElementById("revenueKpi"),
+      marginKpi: document.getElementById("marginKpi"),
+      slaKpi: document.getElementById("slaKpi"),
+      riskKpi: document.getElementById("riskKpi"),
+      revenueDelta: document.getElementById("revenueDelta"),
+      marginDelta: document.getElementById("marginDelta"),
+      slaDelta: document.getElementById("slaDelta"),
+      riskDelta: document.getElementById("riskDelta"),
+      trendNote: document.getElementById("trendNote"),
+      summaryPeriod: document.getElementById("summaryPeriod"),
+      summaryBox: document.getElementById("summaryBox"),
+      metricsBody: document.getElementById("metricsBody"),
+      rowCount: document.getElementById("rowCount"),
+      lastRefresh: document.getElementById("lastRefresh")
+    };
+
+    const money = value => new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    }).format(value);
+
+    const pct = value => `${value.toFixed(1)}%`;
+    const sum = values => values.reduce((total, value) => total + value, 0);
+    const avg = values => values.length ? sum(values) / values.length : 0;
+
+    function populateFilters() {
+      for (const region of regions) {
+        els.regionFilter.add(new Option(region, region));
+      }
+      for (const department of departments) {
+        els.departmentFilter.add(new Option(department, department));
+      }
+      els.lastRefresh.textContent = new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date());
+    }
+
+    function getFilteredData() {
+      const months = Number(els.dateRange.value);
+      const firstMonth = monthNames.length - months;
+      return data.filter(row =>
+        row.monthIndex >= firstMonth &&
+        (els.regionFilter.value === "All" || row.region === els.regionFilter.value) &&
+        (els.departmentFilter.value === "All" || row.department === els.departmentFilter.value)
+      );
+    }
+
+    function getPriorPeriod(currentRows) {
+      const months = Number(els.dateRange.value);
+      const firstMonth = Math.max(0, monthNames.length - months * 2);
+      const lastMonth = monthNames.length - months - 1;
+      return data.filter(row =>
+        row.monthIndex >= firstMonth &&
+        row.monthIndex <= lastMonth &&
+        (els.regionFilter.value === "All" || row.region === els.regionFilter.value) &&
+        (els.departmentFilter.value === "All" || row.department === els.departmentFilter.value)
+      );
+    }
+
+    function setDelta(element, current, prior, inverse = false) {
+      const change = prior ? ((current - prior) / prior) * 100 : 0;
+      element.textContent = `${change >= 0 ? "+" : ""}${change.toFixed(1)}%`;
+      element.classList.toggle("down", inverse ? change > 0 : change < 0);
+    }
+
+    function aggregateBy(rows, key) {
+      const map = new Map();
+      for (const row of rows) {
+        if (!map.has(row[key])) {
+          map.set(row[key], []);
+        }
+        map.get(row[key]).push(row);
+      }
+      return Array.from(map, ([label, items]) => ({
+        label,
+        revenue: sum(items.map(row => row.revenue)),
+        margin: avg(items.map(row => row.margin)),
+        sla: avg(items.map(row => row.sla)),
+        tickets: sum(items.map(row => row.tickets))
+      }));
+    }
+
+    function aggregateByMonth(rows) {
+      return aggregateBy(rows, "month").sort((a, b) => monthNames.indexOf(a.label) - monthNames.indexOf(b.label));
+    }
+
+    function clearCanvas(canvas) {
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * ratio);
+      canvas.height = Math.round(rect.height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function drawAxes(ctx, width, height, padding) {
+      ctx.strokeStyle = "#dce2dc";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, height - padding.bottom);
+      ctx.lineTo(width - padding.right, height - padding.bottom);
+      ctx.stroke();
+    }
+
+    function drawLineChart(canvas, monthly, target) {
+      const { ctx, width, height } = clearCanvas(canvas);
+      const padding = { top: 24, right: 18, bottom: 42, left: 58 };
+      const values = monthly.map(item => item.revenue);
+      const max = Math.max(...values, target) * 1.12;
+      const min = Math.min(...values, target) * 0.82;
+      const xStep = (width - padding.left - padding.right) / Math.max(monthly.length - 1, 1);
+      const y = value => height - padding.bottom - ((value - min) / (max - min)) * (height - padding.top - padding.bottom);
+      const x = index => padding.left + index * xStep;
+
+      drawAxes(ctx, width, height, padding);
+
+      ctx.strokeStyle = "#d9b16b";
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y(target));
+      ctx.lineTo(width - padding.right, y(target));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#8a6229";
+      ctx.font = "12px system-ui";
+      ctx.fillText("Target", width - padding.right - 44, y(target) - 8);
+
+      ctx.strokeStyle = "#26745d";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      monthly.forEach((item, index) => {
+        index ? ctx.lineTo(x(index), y(item.revenue)) : ctx.moveTo(x(index), y(item.revenue));
+      });
+      ctx.stroke();
+
+      monthly.forEach((item, index) => {
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "#26745d";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x(index), y(item.revenue), 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = "#65727a";
+      ctx.font = "12px system-ui";
+      monthly.forEach((item, index) => {
+        if (index % Math.ceil(monthly.length / 6) === 0 || index === monthly.length - 1) {
+          ctx.fillText(item.label.split(" ")[0], x(index) - 10, height - 16);
+        }
+      });
+      ctx.fillText(money(max), 8, padding.top + 4);
+      ctx.fillText(money(min), 8, height - padding.bottom);
+    }
+
+    function drawBarChart(canvas, items, valueKey, colorSet = palette) {
+      const { ctx, width, height } = clearCanvas(canvas);
+      const padding = { top: 24, right: 18, bottom: 46, left: 58 };
+      const max = Math.max(...items.map(item => item[valueKey]), 1) * 1.16;
+      const barGap = 14;
+      const plotWidth = width - padding.left - padding.right;
+      const barWidth = Math.max(18, (plotWidth - barGap * (items.length - 1)) / items.length);
+
+      drawAxes(ctx, width, height, padding);
+
+      items.forEach((item, index) => {
+        const x = padding.left + index * (barWidth + barGap);
+        const barHeight = (item[valueKey] / max) * (height - padding.top - padding.bottom);
+        const y = height - padding.bottom - barHeight;
+        ctx.fillStyle = colorSet[index % colorSet.length];
+        ctx.fillRect(x, y, barWidth, barHeight);
+        ctx.fillStyle = "#65727a";
+        ctx.font = "12px system-ui";
+        ctx.fillText(item.label, x, height - 18);
+      });
+
+      ctx.fillStyle = "#65727a";
+      ctx.font = "12px system-ui";
+      ctx.fillText(valueKey === "revenue" ? money(max) : pct(max), 8, padding.top + 4);
+    }
+
+    function drawDeptChart(canvas, items) {
+      const { ctx, width, height } = clearCanvas(canvas);
+      const padding = { top: 18, right: 20, bottom: 32, left: 128 };
+      const rowHeight = (height - padding.top - padding.bottom) / items.length;
+      const max = 100;
+
+      ctx.font = "12px system-ui";
+      items.forEach((item, index) => {
+        const y = padding.top + index * rowHeight + 8;
+        const marginWidth = ((item.margin / max) * (width - padding.left - padding.right));
+        const slaWidth = ((item.sla / max) * (width - padding.left - padding.right));
+
+        ctx.fillStyle = "#1d2428";
+        ctx.fillText(item.label, 12, y + 13);
+        ctx.fillStyle = "#eef2ef";
+        ctx.fillRect(padding.left, y, width - padding.left - padding.right, 10);
+        ctx.fillRect(padding.left, y + 18, width - padding.left - padding.right, 10);
+        ctx.fillStyle = "#bd7c1f";
+        ctx.fillRect(padding.left, y, marginWidth, 10);
+        ctx.fillStyle = "#1d8591";
+        ctx.fillRect(padding.left, y + 18, slaWidth, 10);
+        ctx.fillStyle = "#65727a";
+        ctx.fillText(`M ${pct(item.margin)}  SLA ${pct(item.sla)}`, padding.left, y + 45);
+      });
+    }
+
+    function updateKpis(rows, priorRows) {
+      const revenue = sum(rows.map(row => row.revenue));
+      const priorRevenue = sum(priorRows.map(row => row.revenue));
+      const margin = avg(rows.map(row => row.margin));
+      const priorMargin = avg(priorRows.map(row => row.margin));
+      const sla = avg(rows.map(row => row.sla));
+      const priorSla = avg(priorRows.map(row => row.sla));
+      const risks = rows.filter(row => row.sla < 92 || row.margin < 40).length;
+      const priorRisks = priorRows.filter(row => row.sla < 92 || row.margin < 40).length;
+
+      els.revenueKpi.textContent = money(revenue);
+      els.marginKpi.textContent = pct(margin);
+      els.slaKpi.textContent = pct(sla);
+      els.riskKpi.textContent = risks;
+      setDelta(els.revenueDelta, revenue, priorRevenue);
+      setDelta(els.marginDelta, margin, priorMargin);
+      setDelta(els.slaDelta, sla, priorSla);
+      els.riskDelta.textContent = `${risks - priorRisks >= 0 ? "+" : ""}${risks - priorRisks}`;
+      els.riskDelta.classList.toggle("down", risks > priorRisks);
+    }
+
+    function updateSummary(rows) {
+      const byRegion = aggregateBy(rows, "region").sort((a, b) => b.revenue - a.revenue);
+      const byDept = aggregateBy(rows, "department").sort((a, b) => b.margin - a.margin);
+      const totalRevenue = sum(rows.map(row => row.revenue));
+      const target = Number(els.targetInput.value) * Number(els.dateRange.value);
+      const attainment = totalRevenue / target * 100;
+      const riskRows = rows.filter(row => row.sla < 92 || row.margin < 40);
+
+      els.summaryBox.innerHTML = `
+        <div class="step">
+          <div class="step-num">1</div>
+          <div><strong>Target attainment</strong><span>${pct(attainment)} of ${money(target)} period target</span></div>
+          <span class="mini">${attainment >= 100 ? "On track" : "Watch"}</span>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div><strong>Best region</strong><span>${byRegion[0].label} contributed ${money(byRegion[0].revenue)}</span></div>
+          <span class="mini">Growth focus</span>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div><strong>Efficiency leader</strong><span>${byDept[0].label} margin averaged ${pct(byDept[0].margin)}</span></div>
+          <span class="mini">Benchmark</span>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div><strong>Operational risks</strong><span>${riskRows.length} filtered rows below margin or SLA thresholds</span></div>
+          <span class="mini">${riskRows.length ? "Review" : "Clear"}</span>
+        </div>
+      `;
+    }
+
+    function updateTable(rows) {
+      const latest = rows.slice().sort((a, b) => b.monthIndex - a.monthIndex).slice(0, 36);
+      els.metricsBody.innerHTML = latest.map(row => {
+        const warning = row.sla < 92 || row.margin < 40;
+        return `
+          <tr>
+            <td>${row.month}</td>
+            <td>${row.region}</td>
+            <td>${row.department}</td>
+            <td>${money(row.revenue)}</td>
+            <td>${pct(row.margin)}</td>
+            <td>${pct(row.sla)}</td>
+            <td>${row.tickets}</td>
+            <td><span class="status ${warning ? "warn" : ""}">${warning ? "Review" : "Healthy"}</span></td>
+          </tr>
+        `;
+      }).join("");
+      els.rowCount.textContent = `${rows.length} records`;
+    }
+
+    function render() {
+      const rows = getFilteredData();
+      const priorRows = getPriorPeriod(rows);
+      const monthly = aggregateByMonth(rows);
+      const byRegion = aggregateBy(rows, "region").sort((a, b) => b.revenue - a.revenue);
+      const byDept = aggregateBy(rows, "department");
+      const target = Number(els.targetInput.value);
+
+      updateKpis(rows, priorRows);
+      updateSummary(rows);
+      updateTable(rows);
+      drawLineChart(document.getElementById("trendChart"), monthly, target);
+      drawBarChart(document.getElementById("regionChart"), byRegion, "revenue");
+      drawDeptChart(document.getElementById("deptChart"), byDept);
+      els.trendNote.textContent = `${els.dateRange.value} months`;
+      els.summaryPeriod.textContent = `${els.regionFilter.value} / ${els.departmentFilter.value}`;
+    }
+
+    function downloadCsv() {
+      const rows = getFilteredData();
+      const header = ["month", "region", "department", "revenue", "margin", "sla", "tickets"];
+      const csv = [header.join(","), ...rows.map(row => header.map(key => row[key]).join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "bi-dashboard-filtered-metrics.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function generateReport() {
+      render();
+      const rows = getFilteredData();
+      const revenue = money(sum(rows.map(row => row.revenue)));
+      const margin = pct(avg(rows.map(row => row.margin)));
+      const sla = pct(avg(rows.map(row => row.sla)));
+      alert(`Management report generated\n\nRevenue: ${revenue}\nGross margin: ${margin}\nSLA compliance: ${sla}\nRecords included: ${rows.length}`);
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      els.dateRange.value = "12";
+      els.regionFilter.value = "All";
+      els.departmentFilter.value = "All";
+      els.targetInput.value = "725000";
+      render();
+    });
+    document.getElementById("csvBtn").addEventListener("click", downloadCsv);
+    document.getElementById("reportBtn").addEventListener("click", generateReport);
+    [els.dateRange, els.regionFilter, els.departmentFilter, els.targetInput].forEach(input => input.addEventListener("input", render));
+    window.addEventListener("resize", render);
+
+    populateFilters();
+    render();
+  </script>
+</body>
+</html>
